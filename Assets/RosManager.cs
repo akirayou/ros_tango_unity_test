@@ -15,16 +15,14 @@ public class RosManager : MonoBehaviour {
     Transformer tf;
     Publisher<Messages.tf.tfMessage> tf_pub;
 
+    List<gm.TransformStamped> updateList=new List<gm.TransformStamped>();
 
 
-
-
-    public static void GetMyIPAddress()
+    //set ROS HOST It's usefule for multi NIC environmet(such as have ROS network and Internet)
+    private void setROS_HOST()
     {
-
         string hostname = System.Net.Dns.GetHostName();
         //ROS.ROS_HOSTNAME = hostname; //In many case network for ROS have invalid name... I Dont't use this.
-
         System.Net.IPAddress[] adrList = System.Net.Dns.GetHostAddresses(hostname);
         foreach (System.Net.IPAddress address in adrList)
         {
@@ -35,63 +33,62 @@ public class RosManager : MonoBehaviour {
         }
         //Debug.Log("ROS my HostName:" + ROS.ROS_HOSTNAME);
         Debug.Log("ROS my HostIP  :" + ROS.ROS_IP);
+    }
 
+    RosManager()
+    {
 
+    }    
+    void Awake()
+    {
+        setROS_HOST();
+        ROS.ROS_MASTER_URI = "http://10.0.1.101:11311";
+        string[] dummy = { "" };
+        ROS.Init(dummy, "unity");
+        n = new NodeHandle();
+        tf = new Transformer(false/* do Interprate ?*/);
+        tf_pub = n.advertise<Messages.tf.tfMessage>("/tf", 100);
     }
 
     // Use this for initialization
     void Start () {
 
-        GetMyIPAddress();
-        ROS.ROS_MASTER_URI = "http://10.0.1.101:11311";
-        string[] dummy = { "" };
-        ROS.Init(dummy, "unity");
-
     }
+
 
     // Update is called once per frame
     void Update () {
-        if (n == null && ROS.isStarted())
-        {
-            n = new NodeHandle();
-            tf = new Transformer(false/* do Interprate ?*/);
-            tf_pub = n.advertise<Messages.tf.tfMessage>("/tf", 100);
-            Debug.Log("=========make node");
-
-        }
-        else
-        {
 
 
 
 
 
-            gm.TransformStamped tfdata = new gm.TransformStamped();
-            tfdata.header = new Messages.std_msgs.Header();
-            tfdata.transform = new gm.Transform();
-            tfdata.header.stamp = ROS.GetTime();
-            tfdata.transform = new gm.Transform();
-            tfdata.transform.translation = new gm.Vector3();
-            tfdata.transform.rotation = new gm.Quaternion();
+        gm.TransformStamped tfdata = new gm.TransformStamped();
+        tfdata.header = new Messages.std_msgs.Header();
+        tfdata.transform = new gm.Transform();
+        tfdata.header.stamp = ROS.GetTime();
+        tfdata.transform = new gm.Transform();
+        tfdata.transform.translation = new gm.Vector3();
+        tfdata.transform.rotation = new gm.Quaternion();
 
 
-            tfdata.header.frame_id = "tango_base";
-            tfdata.child_frame_id = "tango_device";
-            tfdata.transform.translation.x = 0;
-            tfdata.transform.translation.y = 1;
-            tfdata.transform.translation.z = 2;
-            tfdata.transform.rotation.w = 1;
-            tfdata.transform.rotation.x = 0;
-            tfdata.transform.rotation.y = 0;
-            tfdata.transform.rotation.z = 0;
+        tfdata.header.frame_id = "tango_base";
+        tfdata.child_frame_id = "tango_device";
+        tfdata.transform.translation.x = 0;
+        tfdata.transform.translation.y = 1;
+        tfdata.transform.translation.z = 2;
+        tfdata.transform.rotation.w = 1;
+        tfdata.transform.rotation.x = 0;
+        tfdata.transform.rotation.y = 0;
+        tfdata.transform.rotation.z = 0;
+        
 
 
 
+        Messages.tf.tfMessage tfm = new Messages.tf.tfMessage();
+        tfm.transforms = new gm.TransformStamped[] { tfdata };
 
-            Messages.tf.tfMessage tfm = new Messages.tf.tfMessage();
-            tfm.transforms = new gm.TransformStamped[] { tfdata };
-
-            tf_pub.publish(tfm);
+        tf_pub.publish(tfm);
 
 
 
