@@ -154,6 +154,10 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff519ec4bed0442dc9bf3a21a9777c4d, type: 2}
   m_IsPrefabParent: 0
+--- !u!4 &875795249 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 484544, guid: b65144e12d543401285d34c736b7ec92, type: 2}
+  m_PrefabInternal: {fileID: 1980430999}
 --- !u!1 &1602170533
 GameObject:
   m_ObjectHideFlags: 0
@@ -263,6 +267,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a575cb8b212628446b7ae98105bc577a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TangoCamera: {fileID: 875795249}
 --- !u!4 &1900725528
 Transform:
   m_ObjectHideFlags: 0
